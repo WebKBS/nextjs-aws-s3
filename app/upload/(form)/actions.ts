@@ -18,14 +18,21 @@ function encodeFileName(fileName: string) {
 }
 
 // S3에 파일 업로드 함수
-async function uploadFileToS3(file: Buffer, fileName: string) {
+async function uploadFileToS3(
+  file: Buffer,
+  fileName: string,
+  fileType: string
+) {
   const fileBuffer = file;
   const params = {
     Bucket: process.env.AWS_S3_BUCKET_NAME,
     Key: `${encodeFileName(fileName)}`, // 만약 folder를 설정하려면, `폴더이름/${fileName}`
     // 만약 파일 중복을 피하려면 `${Date.now()}_${fileName}` Date now + 파일 이름
     Body: fileBuffer,
+    ContentType: fileType,
   };
+
+  console.log(fileType);
 
   const command = new PutObjectCommand(params);
 
@@ -45,7 +52,7 @@ async function uploadFileToS3(file: Buffer, fileName: string) {
 
 // 파일 업로드 함수
 export async function uploadFile(prevState: any, formData: FormData) {
-  await new Promise((resolve) => setTimeout(resolve, 3000)); // 3초 딜레이 테스트
+  // await new Promise((resolve) => setTimeout(resolve, 3000)); // 3초 딜레이 테스트
 
   try {
     console.log(formData.get('file'));
@@ -71,7 +78,7 @@ export async function uploadFile(prevState: any, formData: FormData) {
 
     const buffer = Buffer.from(await file.arrayBuffer()); // 파일을 버퍼로 변환
 
-    const url = await uploadFileToS3(buffer, file.name);
+    const url = await uploadFileToS3(buffer, file.name, file.type);
 
     revalidatePath('/');
 
