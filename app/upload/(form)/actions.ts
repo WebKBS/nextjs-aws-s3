@@ -59,15 +59,15 @@ export async function uploadFile(prevState: any, formData: FormData) {
 
     const file = formData.get('file') as File;
 
-    if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-      return {
-        status: 'error',
-        message: '파일의 형식은 png, jpeg만 가능합니다.',
-      };
-    } else if (file.size === 0) {
+    if (file.size === 0) {
       return {
         status: 'error',
         message: '파일을 선택해주세요.',
+      };
+    } else if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+      return {
+        status: 'error',
+        message: '파일의 형식은 png, jpeg만 가능합니다.',
       };
     } else if (file.size > 1024 * 1024 * 5) {
       return {
